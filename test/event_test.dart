@@ -35,6 +35,9 @@ void main() {
     test('When I post a different event to the bus${nl} Then the listener does not receive it',
       () => when(postDifferentEvent(bus)).then(hasNotReceivedEvent(listener))
     );
+    test('When I unregister the listener${nl} And post an event to the bus${nl} Then the listener does not receive it',
+      () => when(unregisterAndPostEvent(bus, listener)).then(hasNotReceivedEvent(listener))
+    );
   });
 
   group('Given an Event Bus${nl} And a registered generic listener${nl}', () {
@@ -52,6 +55,9 @@ void main() {
     test('When I post a different event to the bus${nl} Then the listener does not receive it',
       () => when(postDifferentEvent(bus)).then(hasNotReceivedEvent(listener))
     );
+    test('When I unregister the listener${nl} And post an event to the bus${nl} Then the listener does not receive it',
+      () => when(unregisterAndPostEvent(bus, listener)).then(hasNotReceivedEvent(listener))
+    );
   });
 
   group('Given an Event Bus${nl} And a registered permissive listener${nl}', () {
@@ -68,6 +74,9 @@ void main() {
     );
     test('When I post a different event to the bus${nl} Then the listener receives it',
       () => when(postDifferentEvent(bus)).then(hasReceivedEvent(listener))
+    );
+    test('When I unregister the listener${nl} And post an event to the bus${nl} Then the listener does not receive it',
+      () => when(unregisterAndPostEvent(bus, listener)).then(hasNotReceivedEvent(listener))
     );
   });
 }
@@ -99,6 +108,12 @@ Clause postEvent(EventBus bus) =>
 Clause postDifferentEvent(EventBus bus) =>
   () {
     bus.post(new DifferentEvent());
+  };
+
+Clause unregisterAndPostEvent(EventBus bus, Object listener) =>
+  () {
+    bus.unregister(listener);
+    bus.post(new TestEvent());
   };
 
 void isSuccessful(dynamic value) { }

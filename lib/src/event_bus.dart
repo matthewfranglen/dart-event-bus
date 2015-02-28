@@ -19,9 +19,9 @@ part of event_bus;
 ///     eventBus.post(new Event());
 class EventBus {
 
-  final Map<TypeMirror, List<_NotifyListener>> _listeners;
+  final Map<TypeMirror, List<_Subscription>> _subscriptions;
 
-  EventBus() : _listeners = {};
+  EventBus() : _subscriptions = {};
 
   /// Registers all [Subscriber] methods on [observer] to receive events.
   ///
@@ -36,14 +36,17 @@ class EventBus {
   ///     ...
   ///     eventBus.register(new EventBusSubscriber());
   void register(Object observer) {
-    InstanceMirror observerMirror = reflect(observer);
-
-    observerMirror.type.instanceMembers.values
+    reflect(observer).type.instanceMembers.values
       .where(DeclarationAnnotationFacade.filterByAnnotation(Subscribe))
       .where(_validateMethodParameters)
-      .forEach((MethodMirror method) {
-        _subscribe(observerMirror, method);
-      });
+      .forEach(_register(observer));
+  }
+
+  /// Unregisters all subscriber methods on a registered object.
+  ///
+  ///     eventBus.unregister(observer);
+  void unregister(Object observer) {
+    _subscriptions.values.forEach(_unregister(observer));
   }
 
   /// Posts an event to all registered subscribers.
@@ -53,15 +56,10 @@ class EventBus {
   ///
   ///     eventBus.post(new Event());
   void post(Object event) {
-    _listeners.keys
+    _subscriptions.keys
       .where(_isAssignable(event))
-      .expand((TypeMirror type) => _listeners[type])
-      .forEach((_NotifyListener notify) {
-        try {
-          notify(event);
-        }
-        catch (exception) {}
-      });
+      .expand(_typeToSubscriptions)
+      .forEach(_post(event));
   }
 
   bool _validateMethodParameters(MethodMirror method) {
@@ -76,25 +74,40 @@ class EventBus {
     return true;
   }
 
-  TypeMirror _getEventParameterType(MethodMirror method) =>
-    method.parameters.first.type;
+  _SubscribeMethod _register(Object observer) =>
+    (MethodMirror method) {
+      _Subscription subscription = new _Subscription(observer, method);
 
-  void _subscribe(InstanceMirror observer, MethodMirror method) {
-    TypeMirror type = _getEventParameterType(method);
+      if (!_subscriptions.containsKey(subscription.type)) {
+        _subscriptions[subscription.type] = [];
+      }
+      _subscriptions[subscription.type].add(subscription);
+    };
 
-    if (!_listeners.containsKey(type)) {
-      _listeners[type] = [];
-    }
-    _listeners[type].add((Object event) {
-      observer.invoke(method.simpleName, [event]);
-    });
-  }
+  _UnsubscribeMethod _unregister(Object observer) =>
+    (List<_Subscription> subscribers) {
+      subscribers.removeWhere(
+        (_Subscription subscription) => subscription.observer == observer
+      );
+    };
 
   _TypeMirrorFilter _isAssignable(Object event) =>
     (TypeMirror type) => isSubtypeOf(reflectClass(event.runtimeType), type);
+
+  List<_Subscription> _typeToSubscriptions(TypeMirror type) => _subscriptions[type];
+
+  _PostMethod _post(Object event) =>
+    (_Subscription subscription) {
+      try {
+        subscription.notify(event);
+      }
+      catch (exception) {}
+    };
 }
 
-typedef void _NotifyListener(Object event);
+typedef void _SubscribeMethod(MethodMirror method);
+typedef void _UnsubscribeMethod(List<_Subscription> subscribers);
+typedef void _PostMethod(_Subscription observer);
 typedef bool _TypeMirrorFilter(TypeMirror event);
 
 // vim: set ai et sw=2 syntax=dart :
