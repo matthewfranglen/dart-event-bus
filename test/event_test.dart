@@ -40,6 +40,47 @@ void main() {
     );
   });
 
+  group('Given an Event Bus${nl} And a registered dead event listener${nl}', () {
+    EventBus bus;
+    DeadEventListener listener;
+
+    setUp(() {
+      bus = new EventBus();
+      listener = new DeadEventListener();
+      bus.register(listener);
+    });
+    test('When I post an event to the bus${nl} Then the listener receives it',
+      () => when(postEvent(bus)).then(hasReceivedEvent(listener))
+    );
+    test('When I post a different event to the bus${nl} Then the listener receives it',
+      () => when(postDifferentEvent(bus)).then(hasReceivedEvent(listener))
+    );
+    test('When I unregister the listener${nl} And post an event to the bus${nl} Then the listener does not receive it',
+      () => when(unregisterAndPostEvent(bus, listener)).then(hasNotReceivedEvent(listener))
+    );
+  });
+
+  group('Given an Event Bus${nl} And a registered listener${nl} And a dead event listener${nl}', () {
+    EventBus bus;
+    DeadEventListener listener;
+
+    setUp(() {
+      bus = new EventBus();
+      listener = new DeadEventListener();
+      bus.register(listener);
+      bus.register(new MockListener());
+    });
+    test('When I post an event to the bus${nl} Then the dead event listener does not receive it',
+      () => when(postEvent(bus)).then(hasNotReceivedEvent(listener))
+    );
+    test('When I post a different event to the bus${nl} Then the dead event listener receives it',
+      () => when(postDifferentEvent(bus)).then(hasReceivedEvent(listener))
+    );
+    test('When I unregister the listener${nl} And post an event to the bus${nl} Then the dead event listener does not receive it',
+      () => when(unregisterAndPostEvent(bus, listener)).then(hasNotReceivedEvent(listener))
+    );
+  });
+
   group('Given an Event Bus${nl} And a registered generic listener${nl}', () {
     EventBus bus;
     GenericMockListener listener;
@@ -96,6 +137,13 @@ Clause registerListener(EventBus bus) =>
 Clause registerInvalidListener(EventBus bus) =>
   () {
     InvalidListener listener = new InvalidListener();
+    bus.register(listener);
+    return listener;
+  };
+
+Clause registerDeadEventListener(EventBus bus) =>
+  () {
+    DeadEventListener listener = new DeadEventListener();
     bus.register(listener);
     return listener;
   };

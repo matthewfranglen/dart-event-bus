@@ -1,5 +1,16 @@
 part of event_bus;
 
+/// Wraps an event that was posted, but which had no subscribers and thus could not be delivered.
+///
+/// Registering a DeadEvent subscriber is useful for debugging or logging, as
+/// it can detect misconfigurations in a system's event distribution.
+class DeadEvent {
+
+  final Object event;
+
+  DeadEvent(this.event);
+}
+
 class _Subscription {
 
   final Object observer;

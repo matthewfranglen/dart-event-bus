@@ -56,10 +56,17 @@ class EventBus {
   ///
   ///     eventBus.post(new Event());
   void post(Object event) {
-    _subscriptions.keys
-      .where(_isAssignable(event))
-      .expand(_typeToSubscriptions)
-      .forEach(_post(event));
+    Iterable<_Subscription> subscriptions =
+      _subscriptions.keys
+        .where(_isAssignable(event))
+        .expand(_typeToSubscriptions);
+
+    if (subscriptions.isNotEmpty) {
+      subscriptions.forEach(_post(event));
+    }
+    else if (event is ! DeadEvent) {
+      post(new DeadEvent(event));
+    }
   }
 
   bool _validateMethodParameters(MethodMirror method) {

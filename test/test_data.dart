@@ -17,6 +17,18 @@ class MockListener implements Listener {
   }
 }
 
+class DeadEventListener implements Listener {
+
+  List<DeadEvent> events;
+
+  DeadEventListener() : events = [];
+
+  @Subscribe()
+  void listenForEvent(DeadEvent event) {
+    events.add(event);
+  }
+}
+
 class GenericMockListener<T> implements Listener {
 
   List<T> events;
