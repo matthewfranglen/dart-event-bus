@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:event_bus/event_bus.dart';
+import 'package:guava_event_bus/guava_event_bus.dart';
 import 'package:unittest/unittest.dart';
 import 'test_data.dart';
 

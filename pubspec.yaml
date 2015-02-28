@@ -1,4 +1,4 @@
-name: event_bus
+name: guava_event_bus
 version: 0.0.1
 author: Matthew Franglen <matthew.franglen@gmail.com>
 homepage: https://github.com/matthewfranglen/dart-event-bus

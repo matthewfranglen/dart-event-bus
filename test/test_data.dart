@@ -1,4 +1,4 @@
-import 'package:event_bus/event_bus.dart';
+import 'package:guava_event_bus/guava_event_bus.dart';
 
 abstract class Listener {
 

@@ -1,4 +1,4 @@
-part of event_bus;
+part of guava_event_bus;
 
 /// Wraps an event that was posted, but which had no subscribers and thus could not be delivered.
 ///

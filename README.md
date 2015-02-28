@@ -1,5 +1,5 @@
-Event Bus
-=========
+Guava Event Bus
+===============
 
 This library provides a Google Guava style Event Bus.
 
