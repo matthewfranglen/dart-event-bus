@@ -1,4 +1,4 @@
-part of event_bus;
+part of guava_event_bus;
 
 /// EventBus allows publish-subscribe-style communication between components
 /// without requiring the components to explicitly register with one another

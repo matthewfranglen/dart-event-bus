@@ -1,4 +1,4 @@
-part of event_bus;
+part of guava_event_bus;
 
 /// Subscribe annotates a method that can receive EventBus Events.
 ///
