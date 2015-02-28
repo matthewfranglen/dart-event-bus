@@ -1,0 +1,10 @@
+name: event_bus
+version: 0.0.1
+author: Matthew Franglen <matthew.franglen@gmail.com>
+homepage: https://github.com/matthewfranglen/dart-event-bus
+description: publish-subscribe-style communication between components
+dependencies:
+  patch_mirrors: ">=0.0.1 <0.1.0"
+  annotate: ">=0.0.1 <0.1.0"
+dev_dependencies:
+  unittest: any
