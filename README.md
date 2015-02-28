@@ -33,7 +33,6 @@ To register your listener methods with the event producers with EventBus: pass y
 
 To listen for a common event supertype (such as EventObject or Object) with EventBus: events are automatically dispatched to listeners of any supertype, allowing listeners for interface types or "wildcard listeners" for Object.
 
-TODO:
 To listen for and detect events that were dispatched without listeners with EventBus: subscribe to DeadEvent. The EventBus will notify you of any events that were posted but not delivered. (Handy for debugging.)
 
 For Producers
