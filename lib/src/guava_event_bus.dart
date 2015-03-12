@@ -20,8 +20,15 @@ part of guava_event_bus;
 class EventBus {
 
   final Map<TypeMirror, List<_Subscription>> _subscriptions;
+  final ExceptionHandler _exceptionHandler;
 
-  EventBus() : _subscriptions = {};
+  EventBus()
+    : _subscriptions = {},
+      _exceptionHandler = null;
+
+  EventBus.withExceptionHandler(ExceptionHandler handler)
+    : _subscriptions = {},
+      _exceptionHandler = handler;
 
   /// Registers all [Subscriber] methods on [observer] to receive events.
   ///
@@ -108,9 +115,15 @@ class EventBus {
       try {
         subscription.notify(event);
       }
-      catch (exception) {}
+      catch (exception, stackTrace) {
+        if (_exceptionHandler != null) {
+          _exceptionHandler(exception, stackTrace);
+        }
+      }
     };
 }
+
+typedef void ExceptionHandler(var exception, StackTrace stackTrace);
 
 typedef void _SubscribeMethod(MethodMirror method);
 typedef void _UnsubscribeMethod(List<_Subscription> subscribers);
