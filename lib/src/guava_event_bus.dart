@@ -116,14 +116,21 @@ class EventBus {
         subscription.notify(event);
       }
       catch (exception, stackTrace) {
-        if (_exceptionHandler != null) {
-          _exceptionHandler(exception, stackTrace);
-        }
+        _handleException(event, subscription, exception, stackTrace);
       }
     };
+
+  void _handleException(Object event, _Subscription subscription, var exception, StackTrace stackTrace) {
+    if (_exceptionHandler != null) {
+      SubscriberExceptionContext context =
+        new SubscriberExceptionContext(event, this, subscription.observer, subscription.method);
+
+      _exceptionHandler(exception, stackTrace, context);
+    }
+  }
 }
 
-typedef void ExceptionHandler(var exception, StackTrace stackTrace);
+typedef void ExceptionHandler(var exception, StackTrace stackTrace, SubscriberExceptionContext context);
 
 typedef void _SubscribeMethod(MethodMirror method);
 typedef void _UnsubscribeMethod(List<_Subscription> subscribers);
