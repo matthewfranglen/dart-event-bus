@@ -11,21 +11,31 @@ class DeadEvent {
   DeadEvent(this.event);
 }
 
+class SubscriberExceptionContext {
+
+  final Object event;
+  final EventBus eventBus;
+  final Object subscriber;
+  final MethodMirror subscriberMethod;
+
+  SubscriberExceptionContext(this.event, this.eventBus, this.subscriber, this.subscriberMethod);
+}
+
 class _Subscription {
 
   final Object observer;
   final TypeMirror type;
   final InstanceMirror _observerMirror;
-  final MethodMirror _method;
+  final MethodMirror method;
 
   _Subscription(Object observer, MethodMirror method)
     : this.observer = observer,
       type = method.parameters.first.type,
       _observerMirror = reflect(observer),
-      _method = method;
+      this.method = method;
 
   void notify(Object event) {
-    invoke(_observerMirror, _method, [event]);
+    invoke(_observerMirror, method, [event]);
   }
 }
 

@@ -120,6 +120,22 @@ void main() {
       () => when(unregisterAndPostEvent(bus, listener)).then(hasNotReceivedEvent(listener))
     );
   });
+
+  group('Given an Event Bus with an Exception Handler${nl} And a registered exception throwing listener${nl}', () {
+    EventBus bus;
+    ExceptionThrowingListener listener;
+    ExceptionListener exceptionListener;
+
+    setUp(() {
+      exceptionListener = new ExceptionListener();
+      bus = new EventBus.withExceptionHandler(exceptionListener);
+      listener = new ExceptionThrowingListener<TestEvent>();
+      bus.register(listener);
+    });
+    test('When I post an event to the bus${nl} Then the exception handler receives it',
+      () => when(postEvent(bus)).then(hasReceivedEvent(exceptionListener))
+    );
+  });
 }
 
 typedef dynamic Clause();

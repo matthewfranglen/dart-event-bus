@@ -41,6 +41,25 @@ class GenericMockListener<T> implements Listener {
   }
 }
 
+class ExceptionThrowingListener<T> {
+
+  @Subscribe()
+  void listenForEvent(T event) {
+    throw new Exception("Cannot handle ${event}");
+  }
+}
+
+class ExceptionListener implements Listener {
+
+  List events;
+
+  ExceptionListener() : events = [];
+
+  void call(var exception, StackTrace stackTrace, SubscriberExceptionContext context) {
+    events.add(context.event);
+  }
+}
+
 class InvalidListener {
 
   InvalidListener();
