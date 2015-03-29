@@ -24,6 +24,24 @@ Synopsis
       eventBus.post(event);
     }
 
+You can create the event bus with a callback to receive details about exceptions which are thrown by subscribers.
+
+    ExceptionHandler handler = (var exception, StackTrace stackTrace, SubscriberExceptionContext context) {
+      print(context.event);
+    };
+
+    eventBus = new EventBus.withExceptionHandler(handler);
+
+The exception handler is a typedef, and as such is expected to be a function. To use a class instead just implement the _call_ method:
+
+    class CustomExceptionHandler {
+      void call(var exception, StackTrace stackTrace, SubscriberExceptionContext context) {
+        print(context.event);
+      }
+    }
+
+    eventBus = new EventBus.withExceptionHandler(new CustomExceptionHandler());
+
 For Listeners
 -------------
 
