@@ -7,4 +7,6 @@ dependencies:
   patch_mirrors: ">=0.0.1 <0.1.0"
   annotate: ">=0.0.1 <0.1.0"
 dev_dependencies:
+  behave:
+    git: git@github.com:matthewfranglen/dart-behave.git
   unittest: any
