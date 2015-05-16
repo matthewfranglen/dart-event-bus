@@ -21,6 +21,7 @@ class EventBus {
 
   final Map<TypeMirror, List<_Subscription>> _subscriptions;
   final ExceptionHandler _exceptionHandler;
+  Future<dynamic> _lastPostedEvent;
 
   EventBus()
     : _subscriptions = {},
@@ -63,6 +64,19 @@ class EventBus {
   ///
   ///     eventBus.post(new Event());
   void post(Object event) {
+    if (_lastPostedEvent == null) {
+      _lastPostedEvent = new Future(() {
+        _postToAllSubscriptions(event);
+      });
+    }
+    else {
+      _lastPostedEvent = _lastPostedEvent.then((_) {
+        _postToAllSubscriptions(event);
+      });
+    }
+  }
+
+  void _postToAllSubscriptions(Object event) {
     Iterable<_Subscription> subscriptions =
       _subscriptions.keys
         .where(_isAssignable(event))
@@ -70,7 +84,7 @@ class EventBus {
         .toList();
 
     if (subscriptions.isNotEmpty) {
-      subscriptions.forEach(_post(event));
+      subscriptions.forEach(_postToSubscription(event));
     }
     else if (event is ! DeadEvent) {
       post(new DeadEvent(event));
@@ -111,7 +125,7 @@ class EventBus {
 
   List<_Subscription> _typeToSubscriptions(TypeMirror type) => _subscriptions[type];
 
-  _PostMethod _post(Object event) =>
+  _PostMethod _postToSubscription(Object event) =>
     (_Subscription subscription) {
       try {
         subscription.notify(event);

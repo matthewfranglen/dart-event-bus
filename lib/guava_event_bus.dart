@@ -1,5 +1,6 @@
 library guava_event_bus;
 
+import 'dart:async';
 import 'dart:mirrors';
 import 'package:annotate/annotate.dart';
 import 'package:patch_mirrors/patch_mirrors.dart';
