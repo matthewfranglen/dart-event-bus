@@ -9,6 +9,8 @@ class DeadEvent {
   final Object event;
 
   DeadEvent(this.event);
+
+  String toString() => "DeadEvent(${event})";
 }
 
 class SubscriberExceptionContext {
