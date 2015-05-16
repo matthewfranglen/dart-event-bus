@@ -66,7 +66,8 @@ class EventBus {
     Iterable<_Subscription> subscriptions =
       _subscriptions.keys
         .where(_isAssignable(event))
-        .expand(_typeToSubscriptions);
+        .expand(_typeToSubscriptions)
+        .toList();
 
     if (subscriptions.isNotEmpty) {
       subscriptions.forEach(_post(event));
